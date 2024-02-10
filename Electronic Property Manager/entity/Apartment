@@ -1,0 +1,44 @@
+package org.example.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.List;
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Apartment extends IdGenerator {
+
+    private double area;
+    private int pets;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Building building;
+
+    @ManyToMany(mappedBy = "apartmentList")
+    private List<Owner> ownerList;
+
+    @OneToMany(mappedBy = "apartment")
+    private List<People> peopleList;
+
+    @OneToMany(mappedBy = "apartment")
+    private List<PayTaxes> payTaxesList;
+
+    public Apartment(double area, int pets) {
+        this.area = area;
+        this.pets = pets;
+    }
+
+    @Override
+    public String toString() {
+        return "Apartment{" +
+                "area=" + area +
+                ", pets=" + pets +
+                "} " + super.toString();
+    }
+}
