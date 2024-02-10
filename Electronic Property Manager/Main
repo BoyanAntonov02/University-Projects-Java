@@ -1,0 +1,18 @@
+package org.example;
+
+import org.example.configuration.SessionFactoryUtil;
+import org.example.dao.*;
+import org.example.entity.*;
+import org.example.exception.CompanyNotFoundException;
+import org.example.exception.NoEmployeeInCompany;
+import java.time.LocalDate;
+
+
+public class Main {
+    public static void main(String[] args)  {
+
+        SessionFactoryUtil.getSessionFactory().openSession();
+
+        TaxDao.payTax(2L, 1);
+    }
+}
