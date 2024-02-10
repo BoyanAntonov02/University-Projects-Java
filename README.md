@@ -7,7 +7,7 @@ Used Java and Sql with hibernate connection
 Management of companies, buildings and employees
 Processing of financial transactions
 
-#Java Store Project
+# Java Store Project
 The Java Store Project simulates the operations of a retail shop, including managing inventory, processing sales and generating receipts.
 **Features**
 Cashier Management and sales processing
