@@ -1,0 +1,132 @@
+package org.example.dao;
+
+import org.example.configuration.SessionFactoryUtil;
+import org.example.entity.Apartment;
+import org.example.entity.Building;
+import org.example.entity.People;
+import org.example.exception.CannotCreateApartmentWithoutValidBuildingID;
+import org.example.exception.CompanyNotFoundException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ApartmentDao {
+
+    /**
+     * Creates a new apartment associated with the specified building ID.
+     *
+     * @param apartment  The apartment object to be created.
+     * @param buildingID The ID of the building to which the apartment belongs.
+     * @throws RuntimeException                            If there is an issue with the transaction.
+     * @throws CannotCreateApartmentWithoutValidBuildingID If the provided building ID is invalid.
+     */
+    public static void createApartment(Apartment apartment, Long buildingID){
+
+        try(Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Building building = session.get(Building.class, buildingID);
+            if(building == null){
+                try {
+                    throw new CannotCreateApartmentWithoutValidBuildingID();
+                } catch (CannotCreateApartmentWithoutValidBuildingID e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            apartment.setBuilding(building);
+            session.save(apartment);
+            transaction.commit();
+        }
+    }
+
+
+    /**
+     * Deletes an apartment by its ID.
+     *
+     * @param id The ID of the apartment to be deleted.
+     */
+    public static void deleteApartment(Long id){
+
+        try(Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+
+            Apartment apartment = session.get(Apartment.class, id);
+            session.delete(apartment);
+
+            transaction.commit();
+        }
+    }
+
+
+    /**
+     * Updates an existing apartment with new information.
+     *
+     * @param newApartment The updated apartment object.
+     * @param id           The ID of the apartment to be updated.
+     * @throws CompanyNotFoundException If the apartment with the provided ID is not found.
+     */
+    public static void updateApartment(Apartment newApartment, Long id) throws CompanyNotFoundException {
+
+        try(Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+
+            Apartment oldApartment = session.get(Apartment.class, id);
+
+            if(oldApartment != null){
+                newApartment.setId(oldApartment.getId());
+                session.saveOrUpdate(newApartment);
+            } else throw new CompanyNotFoundException(id);
+
+            transaction.commit();
+        }
+    }
+
+
+    /**
+     * Retrieves a list of all apartments.
+     *
+     * @return A list containing all apartment objects.
+     */
+    public static List<Apartment> allApartment(){
+        List<Apartment> apartmentList = new ArrayList<>();
+
+        try(Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+
+            apartmentList = session.createQuery("select c from org.example.entity.Company c", Apartment.class).getResultList();
+
+
+            transaction.commit();
+        }
+        return apartmentList;
+    }
+
+
+
+
+    /**
+     * Retrieves a list of people residing in a specified apartment.
+     *
+     * @param apartmentID The ID of the apartment.
+     * @return A list containing people residing in the specified apartment.
+     */
+    public static List<People> peopleInApartment(Long apartmentID){
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<People> cr = cb.createQuery(People.class);
+            Root<People> root = cr.from(People.class);
+            cr.select(root).where(cb.equal(root.get("apartment").get("id"), apartmentID));
+            TypedQuery<People> typedQuery = session.createQuery(cr);
+
+
+            return typedQuery.getResultList();
+
+        }
+    }
+}
