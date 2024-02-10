@@ -1,0 +1,9 @@
+package org.example.exception;
+
+public class PaySumNeedToBePositiveException extends Exception {
+    public PaySumNeedToBePositiveException()  {
+
+        super("The sum need to be positive");
+
+    }
+}
