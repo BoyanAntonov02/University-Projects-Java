@@ -1,0 +1,48 @@
+package org.example.goods;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public class Goods {
+    private final int id;
+    private String name;
+    private BigDecimal price;
+    private LocalDate expiredDate;
+    private GoodsType goodsType;
+
+    public Goods(int id, String name, BigDecimal price, LocalDate expiredDate, GoodsType goodsType) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.expiredDate = expiredDate;
+        this.goodsType = goodsType;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public LocalDate getExpiredDate() {
+        return expiredDate;
+    }
+
+    public void setExpiredDate(LocalDate expiredDate) {
+        this.expiredDate = expiredDate;
+    }
+
+    public GoodsType getGoodsType() {
+        return goodsType;
+    }
+
+    public void setGoodsType(GoodsType goodsType) {
+        this.goodsType = goodsType;
+    }
+}
